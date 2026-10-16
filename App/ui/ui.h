@@ -37,7 +37,7 @@ enum GUI_DisplayType_t
 #ifdef ENABLE_FEAT_F4HWN_RXTX_LOG
     DISPLAY_RXTX_LOG,
 #endif
-
+    DISPLAY_CUSTOM_SCREEN,    // <-- ADD THIS LINE HERE
     DISPLAY_N_ELEM,
     DISPLAY_INVALID = 0xFFu
 };
