@@ -16,6 +16,7 @@
 
 #include <assert.h>
 #include <string.h>
+#include "ui/custom_screen.h"
 
 #include "app/chFrScanner.h"
 #include "app/dtmf.h"
@@ -70,6 +71,9 @@ void (*const UI_DisplayFunctions[])(void) = {
 #ifdef ENABLE_FEAT_F4HWN_RXTX_LOG
     [DISPLAY_RXTX_LOG] = &UI_DisplayRxTxLog,
 #endif
+
+    [DISPLAY_CUSTOM_SCREEN] = &UI_DisplayCustomScreen,  // <-- ADD THIS LINE HERE
+
 };
 
 static_assert(ARRAY_SIZE(UI_DisplayFunctions) == DISPLAY_N_ELEM);
