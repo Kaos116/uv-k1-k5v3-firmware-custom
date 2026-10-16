@@ -130,6 +130,7 @@ void (*const ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKey
 #ifdef ENABLE_FEAT_F4HWN_RXTX_LOG
     [DISPLAY_RXTX_LOG] = &RXTX_LOG_ProcessKeys,
 #endif
+    [DISPLAY_CUSTOM_SCREEN] = APP_ProcessKeysCustomScreen, // <-- ADD THIS LINE
 };
 
 static_assert(ARRAY_SIZE(ProcessKeysFunctions) == DISPLAY_N_ELEM);
@@ -175,6 +176,17 @@ static void ScreenSaverDrawMatrixGlyph(uint8_t x, int16_t y, uint8_t glyph)
         }
     }
 }
+
+void APP_ProcessKeysCustomScreen(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
+{
+    if (bKeyPressed && (Key == KEY_EXIT || Key == KEY_PTT))
+    {
+        GUI_SelectNextDisplay(DISPLAY_MAIN);
+    }
+}
+
+
+
 
 static void ScreenSaverRenderMatrix(bool reset)
 {
