@@ -42,7 +42,9 @@ void UI_DisplayCustomScreen(void)
     // LINE 2: Large Frequency Font in the Middle
     // ==========================================
     uint32_t frequency = gRxVfo->Frequency;
-    sprintf(string, "%lu.%05lu", frequency / 100000, frequency % 100000);
+    unsigned int MHz = frequency / 100000;
+    unsigned int kHz = frequency % 100000;
+    sprintf(string, "%u.%05u", MHz, kHz);
     UI_PrintStringBig(string, 2, 16, 2);
 
     // ==========================================
@@ -56,17 +58,17 @@ void UI_DisplayCustomScreen(void)
     }
     UI_PrintStringSmall(string, 0, 31, 5);
 
-    // Column 2: Power Level (LOW / MID / HIGH)
+    // Column 2: Power Level
     switch (gTxVfo->OUTPUT_POWER) {
         case OUTPUT_POWER_LOW:
-            strcpy(string, "LOW");
+            strcpy(string, "PWR:L");
             break;
         case OUTPUT_POWER_MID:
-            strcpy(string, "MID");
+            strcpy(string, "PWR:M");
             break;
         case OUTPUT_POWER_HIGH:
         default:
-            strcpy(string, "HIGH");
+            strcpy(string, "PWR:H");
             break;
     }
     UI_PrintStringSmall(string, 32, 63, 5);
