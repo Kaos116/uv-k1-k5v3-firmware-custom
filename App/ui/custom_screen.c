@@ -39,13 +39,13 @@ void UI_DisplayCustomScreen(void)
     UI_PrintStringSmallBold("UV-K1 CUSTOM", 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Large Frequency Font in the Middle
+    // LINE 2: Frequency in the Middle
     // ==========================================
-    uint32_t frequency = gRxVfo->Frequency;
+    uint32_t frequency = gRxVfo->pRX->Frequency;
     unsigned int MHz = frequency / 100000;
     unsigned int kHz = frequency % 100000;
     sprintf(string, "%u.%05u", MHz, kHz);
-    UI_PrintStringBig(string, 2, 16, 2);
+    UI_PrintString(string, 2, 16, 2, true);
 
     // ==========================================
     // LINE 3: Bottom Status Bar (Split into 4 columns)
@@ -56,11 +56,12 @@ void UI_DisplayCustomScreen(void)
     } else {
         sprintf(string, "VFO-%u", gEeprom.RX_VFO);
     }
-    UI_PrintStringSmall(string, 0, 31, 5);
+    UI_PrintStringSmallBold(string, 0, 31, 5);
 
     // Column 2: Power Level
     switch (gTxVfo->OUTPUT_POWER) {
-        case OUTPUT_POWER_LOW:
+        case OUTPUT_POWER_LOW1:
+        case OUTPUT_POWER_LOW2:
             strcpy(string, "PWR:L");
             break;
         case OUTPUT_POWER_MID:
@@ -71,15 +72,15 @@ void UI_DisplayCustomScreen(void)
             strcpy(string, "PWR:H");
             break;
     }
-    UI_PrintStringSmall(string, 32, 63, 5);
+    UI_PrintStringSmallBold(string, 32, 63, 5);
 
     // Column 3: CTCSS / Tone info placeholder
     strcpy(string, "TONE");
-    UI_PrintStringSmall(string, 64, 95, 5);
+    UI_PrintStringSmallBold(string, 64, 95, 5);
 
-    // Column 4: Battery Indicator icon/text
-    sprintf(string, "%u%%", gBatteryPercent);
-    UI_PrintStringSmall(string, 96, 127, 5);
+    // Column 4: Battery Indicator
+    sprintf(string, "%uV", gBatteryVoltage / 100);
+    UI_PrintStringSmallBold(string, 96, 127, 5);
 
     // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
