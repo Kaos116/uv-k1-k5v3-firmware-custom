@@ -55,7 +55,7 @@
 #include "ui/inputbox.h"
 #include "ui/menu.h"
 #include "ui/ui.h"
-
+#include "ui/custom_screen.h"
 
 uint8_t gUnlockAllTxConfCnt;
 bool     gScanMixEditorActive;
@@ -1840,7 +1840,7 @@ static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
             gRequestDisplayScreen = DISPLAY_CUSTOM_SCREEN;
             return;
         }
-        
+
         #ifdef ENABLE_VOICE
             if (m != MENU_SCR)
                 gAnotherVoiceID = MenuList[gMenuIndices[gMenuCursor]].voice_id;
