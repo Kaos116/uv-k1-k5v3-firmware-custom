@@ -525,7 +525,10 @@ int MENU_GetLimits(uint8_t menu_id, int32_t *pMin, int32_t *pMax)
             *pMax = vol_max;
             break;
         }
-
+        case MENU_CUSTOM_SCR:
+            *pMin = 0;
+            *pMax = 0;
+            return 0;
         default:
             return -1;
     }
@@ -980,6 +983,10 @@ void MENU_AcceptSetting(void)
             gRequestSaveChannel       = 1;
             return;
 #endif
+        case MENU_CUSTOM_SCR:
+            gScreenToDisplay = DISPLAY_CUSTOM_SCREEN;
+            gRequestDisplayScreen = DISPLAY_CUSTOM_SCREEN;
+            return;
     }
 
     gRequestSaveSettings = true;
@@ -1827,6 +1834,13 @@ static void MENU_Key_MENU(const bool bKeyPressed, const bool bKeyHeld)
     {
         const int m = UI_MENU_GetCurrentMenuId();
 
+        if (m == MENU_CUSTOM_SCR)
+        {
+            gScreenToDisplay = DISPLAY_CUSTOM_SCREEN;
+            gRequestDisplayScreen = DISPLAY_CUSTOM_SCREEN;
+            return;
+        }
+        
         #ifdef ENABLE_VOICE
             if (m != MENU_SCR)
                 gAnotherVoiceID = MenuList[gMenuIndices[gMenuCursor]].voice_id;
