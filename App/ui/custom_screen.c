@@ -50,10 +50,10 @@ void UI_DisplayCustomScreen(void)
         string[4] = '0' + gEeprom.RX_VFO;
         string[5] = '\0';
     }
-    UI_PrintStringSmallBold(string, 0, 127, 0);
+    UI_PrintStringSmall(string, 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Frequency in the Middle (Big Digits)
+    // LINE 2: Frequency in the Middle (Standard)
     // ==========================================
     uint32_t freq = gRxVfo->pRX->Frequency;
     unsigned int mhz = freq / 100000;
@@ -70,8 +70,7 @@ void UI_DisplayCustomScreen(void)
     string[8] = '0' + khz % 10;
     string[9] = '\0';
 
-    // Use UI_PrintBigDigits or standard UI_PrintString with correct X offset
-    UI_PrintString(string, 4, 127, 2, true);
+    UI_PrintString(string, 4, 127, 2, false);
 
     // ==========================================
     // LINE 3: Bottom Status Bar (4 Clean Columns)
@@ -81,7 +80,7 @@ void UI_DisplayCustomScreen(void)
     } else {
         strcpy(string, "VFO");
     }
-    UI_PrintStringSmallBold(string, 0, 30, 5);
+    UI_PrintStringSmall(string, 0, 30, 5);
 
     switch (gTxVfo->OUTPUT_POWER) {
         case OUTPUT_POWER_LOW1:
@@ -96,10 +95,10 @@ void UI_DisplayCustomScreen(void)
             strcpy(string, "HIGH");
             break;
     }
-    UI_PrintStringSmallBold(string, 34, 64, 5);
+    UI_PrintStringSmall(string, 34, 64, 5);
 
     strcpy(string, "CTCSS");
-    UI_PrintStringSmallBold(string, 68, 94, 5);
+    UI_PrintStringSmall(string, 68, 94, 5);
 
     unsigned int bat = gBatteryVoltages[0];
     string[0] = '0' + (bat / 1000) % 10;
@@ -107,7 +106,8 @@ void UI_DisplayCustomScreen(void)
     string[2] = '0' + (bat / 100) % 10;
     string[3] = 'V';
     string[4] = '\0';
-    UI_PrintStringSmallBold(string, 98, 127, 5);
+    UI_PrintStringSmall(string, 98, 127, 5);
 
+    // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
 }
