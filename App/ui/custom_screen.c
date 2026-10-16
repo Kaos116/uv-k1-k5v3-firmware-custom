@@ -1,69 +1,84 @@
-#include <string.h>
+/* Copyright 2023 Dual Tachyon
+ * https://github.com/DualTachyon
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ */
+
 #include <stdio.h>
-#include "driver/st7565.h"
+#include <string.h>
+
+#include "ui/custom_screen.h"
 #include "ui/helper.h"
-#include "functions.h"
-#include "radio.h"
-#include "settings.h"
 #include "ui/inputbox.h"
 #include "ui/ui.h"
+#include "driver/st7565.h"
+#include "settings.h"
+#include "functions.h"
+#include "misc.h"
 
-// Fixed X offset starting points for Line 3 status columns
-#define COL_CHAN_X   0
-#define COL_PWR_X    44
-#define COL_TONE_X   76
-#define COL_BAT_X    112
+void UI_DisplayCustomScreen(void)
+{
+    char string[16];
 
-void UI_DisplayCustomScreen(void) {
-    char str[18];
+    // 1. Clear the screen buffer before drawing
+    UI_DisplayClear();
 
-    // 1. Clear LCD screen frame buffer
-    memset(gFrameBuffer, 0, sizeof(gFrameBuffer));
+    // ==========================================
+    // LINE 1: Top Text Header (14-16 chars)
+    // ==========================================
+    UI_PrintStringSmallBold("UV-K1 CUSTOM", 0, 127, 0);
 
-    // =========================================================================
-    // LINE 1: Header (16 Characters Max)
-    // =========================================================================
-    UI_PrintStringSmall("UV-K1 CUSTOM", 0, 127, 0);
+    // ==========================================
+    // LINE 2: Large Frequency Font in the Middle
+    // ==========================================
+    uint32_t frequency = gRxVfo->Frequency;
+    sprintf(string, "%lu.%05lu", frequency / 100000, frequency % 100000);
+    UI_PrintStringBig(string, 2, 16, 2);
 
-    // =========================================================================
-    // LINE 2: Large Frequency Display
-    // =========================================================================
-    sprintf(str, "%u.%05u", 
-            gEeprom.VfoInfo[gEeprom.TX_VFO].pRX->Frequency / 100000, 
-            gEeprom.VfoInfo[gEeprom.TX_VFO].pRX->Frequency % 100000);
-    UI_PrintStringSmall(str, 12, 127, 2);
-
-    // =========================================================================
-    // LINE 3: Status Columns (Page 6)
-    // =========================================================================
-
-    // Col 1: Channel # or VFO (CH-001 or VFO A)
-    if (gEeprom.SCREEN_CHANNEL_MODE == MR_MODE) {
-        sprintf(str, "CH-%03d", gEeprom.MrChannel[gEeprom.TX_VFO] + 1);
+    // ==========================================
+    // LINE 3: Bottom Status Bar (Split into 4 columns)
+    // ==========================================
+    // Column 1: Channel / VFO mode indicator
+    if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
+        sprintf(string, "CH-%03u", gRxVfo->CHANNEL_SAVE + 1);
     } else {
-        sprintf(str, "VFO %c", (gEeprom.TX_VFO == 0) ? 'A' : 'B');
+        sprintf(string, "VFO-%u", gEeprom.RX_VFO);
     }
-    UI_PrintStringSmall(str, COL_CHAN_X, 0, 6);
+    UI_PrintStringSmall(string, 0, 31, 5);
 
-    // Col 2: Power Level (LOW, MED, HIGH)
-    switch (gEeprom.VfoInfo[gEeprom.TX_VFO].OUTPUT_POWER) {
-        case OUTPUT_POWER_LOW:  strcpy(str, "LOW"); break;
-        case OUTPUT_POWER_MID:  strcpy(str, "MED"); break;
-        case OUTPUT_POWER_HIGH: default: strcpy(str, "HIGH"); break;
+    // Column 2: Power Level (LOW / MID / HIGH)
+    switch (gTxVfo->OUTPUT_POWER) {
+        case OUTPUT_POWER_LOW:
+            strcpy(string, "LOW");
+            break;
+        case OUTPUT_POWER_MID:
+            strcpy(string, "MID");
+            break;
+        case OUTPUT_POWER_HIGH:
+        default:
+            strcpy(string, "HIGH");
+            break;
     }
-    UI_PrintStringSmall(str, COL_PWR_X, 0, 6);
+    UI_PrintStringSmall(string, 32, 63, 5);
 
-    // Col 3: CTCSS Tone (123.0 - blank if none set)
-    if (gEeprom.VfoInfo[gEeprom.TX_VFO].SCRAMBLER_TYPE == 0 && 
-        gEeprom.VfoInfo[gEeprom.TX_VFO].CodeType == CODE_TYPE_CTCSS) {
-        uint16_t tone = CTCSS_Options[gEeprom.VfoInfo[gEeprom.TX_VFO].Code];
-        sprintf(str, "%u.%u", tone / 10, tone % 10);
-        UI_PrintStringSmall(str, COL_TONE_X, 0, 6);
-    }
+    // Column 3: CTCSS / Tone info placeholder
+    strcpy(string, "TONE");
+    UI_PrintStringSmall(string, 64, 95, 5);
 
-    // Col 4: Battery Icon
-    UI_DrawBattery(COL_BAT_X, 6);
+    // Column 4: Battery Indicator icon/text
+    sprintf(string, "%u%%", gBatteryPercent);
+    UI_PrintStringSmall(string, 96, 127, 5);
 
-    // Push buffer to physical LCD
-    ST7565_Render();
+    // Render the final buffer to the LCD screen
+    ST7565_BlitFullScreen();
 }
