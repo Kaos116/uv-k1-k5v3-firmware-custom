@@ -73,15 +73,17 @@ void UI_DisplayCustomScreen(void)
     UI_PrintString(string, 4, 127, 2, false);
 
     // ==========================================
-    // LINE 3: Bottom Status Bar (4 Clean Columns)
+    // LINE 3: Bottom Status Bar (3 Spread Columns)
     // ==========================================
+    // Col 1: Mode/CH
     if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
         strcpy(string, "MR");
     } else {
         strcpy(string, "VFO");
     }
-    UI_PrintStringSmall(string, 0, 30, 5);
+    UI_PrintStringSmall(string, 0, 40, 5);
 
+    // Col 2: Power Level
     switch (gTxVfo->OUTPUT_POWER) {
         case OUTPUT_POWER_LOW1:
         case OUTPUT_POWER_LOW2:
@@ -95,18 +97,11 @@ void UI_DisplayCustomScreen(void)
             strcpy(string, "HIGH");
             break;
     }
-    UI_PrintStringSmall(string, 34, 64, 5);
+    UI_PrintStringSmall(string, 44, 84, 5);
 
+    // Col 3: Tone info
     strcpy(string, "CTCSS");
-    UI_PrintStringSmall(string, 68, 94, 5);
-
-    unsigned int bat = gBatteryVoltages[0];
-    string[0] = '0' + (bat / 1000) % 10;
-    string[1] = '.';
-    string[2] = '0' + (bat / 100) % 10;
-    string[3] = 'V';
-    string[4] = '\0';
-    UI_PrintStringSmall(string, 98, 127, 5);
+    UI_PrintStringSmall(string, 88, 127, 5);
 
     // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
