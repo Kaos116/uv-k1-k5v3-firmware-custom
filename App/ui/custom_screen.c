@@ -1,11 +1,12 @@
 #include <string.h>
 #include <stdio.h>
 #include "driver/st7565.h"
-#include "ui/graphics.h"
 #include "ui/helper.h"
 #include "functions.h"
 #include "radio.h"
 #include "settings.h"
+#include "ui/inputbox.h"
+#include "ui/ui.h"
 
 // Fixed X offset starting points for Line 3 status columns
 #define COL_CHAN_X   0
