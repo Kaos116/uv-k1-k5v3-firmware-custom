@@ -184,7 +184,6 @@ static void ScreenSaverDrawMatrixGlyph(uint8_t x, int16_t y, uint8_t glyph)
     }
 }
 
-
 static void ScreenSaverRenderMatrix(bool reset)
 {
     if (reset) {
