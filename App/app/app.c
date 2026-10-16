@@ -184,16 +184,6 @@ static void ScreenSaverDrawMatrixGlyph(uint8_t x, int16_t y, uint8_t glyph)
     }
 }
 
-void APP_ProcessKeysCustomScreen(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
-{
-    if (bKeyPressed && (Key == KEY_EXIT || Key == KEY_PTT))
-    {
-        GUI_SelectNextDisplay(DISPLAY_MAIN);
-    }
-}
-
-
-
 
 static void ScreenSaverRenderMatrix(bool reset)
 {
