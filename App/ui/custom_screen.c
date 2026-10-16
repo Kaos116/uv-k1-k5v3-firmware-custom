@@ -14,7 +14,6 @@
  *     limitations under the License.
  */
 
-#include <stdio.h>
 #include <string.h>
 
 #include "ui/custom_screen.h"
@@ -39,22 +38,40 @@ void UI_DisplayCustomScreen(void)
     UI_PrintStringSmallBold("UV-K1 CUSTOM", 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Frequency in the Middle
+    // LINE 2: Frequency in the Middle (Manual Formatting)
     // ==========================================
-    uint32_t frequency = gRxVfo->pRX->Frequency;
-    unsigned int MHz = frequency / 100000;
-    unsigned int kHz = frequency % 100000;
-    sprintf(string, "%u.%05u", MHz, kHz);
+    uint32_t freq = gRxVfo->pRX->Frequency;
+    unsigned int mhz = freq / 100000;
+    unsigned int khz = freq % 100000;
+
+    string[0] = '0' + (mhz / 100) % 10;
+    string[1] = '0' + (mhz / 10) % 10;
+    string[2] = '0' + mhz % 10;
+    string[3] = '.';
+    string[4] = '0' + (khz / 10000) % 10;
+    string[5] = '0' + (khz / 1000) % 10;
+    string[6] = '0' + (khz / 100) % 10;
+    string[7] = '0' + (khz / 10) % 10;
+    string[8] = '0' + khz % 10;
+    string[9] = '\0';
+
     UI_PrintString(string, 2, 16, 2, true);
 
     // ==========================================
-    // LINE 3: Bottom Status Bar (Split into 4 columns)
+    // LINE 3: Bottom Status Bar (4 Fixed Columns)
     // ==========================================
     // Column 1: Channel / VFO mode indicator
     if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
-        sprintf(string, "CH-%03u", gRxVfo->CHANNEL_SAVE + 1);
+        unsigned int ch = gRxVfo->CHANNEL_SAVE + 1;
+        string[0] = 'C'; string[1] = 'H'; string[2] = '-';
+        string[3] = '0' + (ch / 100) % 10;
+        string[4] = '0' + (ch / 10) % 10;
+        string[5] = '0' + ch % 10;
+        string[6] = '\0';
     } else {
-        sprintf(string, "VFO-%u", gEeprom.RX_VFO);
+        string[0] = 'V'; string[1] = 'F'; string[2] = 'O'; string[3] = '-';
+        string[4] = '0' + gEeprom.RX_VFO;
+        string[5] = '\0';
     }
     UI_PrintStringSmallBold(string, 0, 31, 5);
 
@@ -78,8 +95,13 @@ void UI_DisplayCustomScreen(void)
     strcpy(string, "TONE");
     UI_PrintStringSmallBold(string, 64, 95, 5);
 
-    // Column 4: Battery Indicator
-    sprintf(string, "%uV", gBatteryVoltages[0] / 100);
+    // Column 4: Battery Voltage Indicator
+    unsigned int bat = gBatteryVoltages[0];
+    string[0] = '0' + (bat / 1000) % 10;
+    string[1] = '.';
+    string[2] = '0' + (bat / 100) % 10;
+    string[3] = 'V';
+    string[4] = '\0';
     UI_PrintStringSmallBold(string, 96, 127, 5);
 
     // Render the final buffer to the LCD screen
