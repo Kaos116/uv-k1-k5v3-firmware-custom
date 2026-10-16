@@ -44,6 +44,7 @@ target_sources(App INTERFACE
     ui/helper.c
     ui/inputbox.c
     ui/main.c
+    ui/custom_screen.c
     ui/menu.c
     ui/scanner.c
     ui/status.c
