@@ -36,11 +36,9 @@ void UI_DisplayCustomScreen(void)
     // LINE 1: Top Header - Actual Channel Name
     // ==========================================
     if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE) && gRxVfo->Name[0] != '\0' && gRxVfo->Name[0] != 0xFF) {
-        // Show saved memory channel name
         memcpy(string, gRxVfo->Name, 10);
         string[10] = '\0';
     } else if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
-        // Fallback if memory channel has no custom name
         unsigned int ch = gRxVfo->CHANNEL_SAVE + 1;
         string[0] = 'C'; string[1] = 'H'; string[2] = '-';
         string[3] = '0' + (ch / 100) % 10;
@@ -48,7 +46,6 @@ void UI_DisplayCustomScreen(void)
         string[5] = '0' + ch % 10;
         string[6] = '\0';
     } else {
-        // VFO Mode indicator
         string[0] = 'V'; string[1] = 'F'; string[2] = 'O'; string[3] = '-';
         string[4] = '0' + gEeprom.RX_VFO;
         string[5] = '\0';
@@ -56,7 +53,7 @@ void UI_DisplayCustomScreen(void)
     UI_PrintStringSmallBold(string, 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Frequency in the Middle (Centered)
+    // LINE 2: Frequency in the Middle (Big Digits)
     // ==========================================
     uint32_t freq = gRxVfo->pRX->Frequency;
     unsigned int mhz = freq / 100000;
@@ -73,13 +70,12 @@ void UI_DisplayCustomScreen(void)
     string[8] = '0' + khz % 10;
     string[9] = '\0';
 
-    // X position shifted inward so it doesn't clip on the left edge
-    UI_PrintString(string, 8, 16, 2, true);
+    // Use UI_PrintBigDigits or standard UI_PrintString with correct X offset
+    UI_PrintString(string, 4, 127, 2, true);
 
     // ==========================================
     // LINE 3: Bottom Status Bar (4 Clean Columns)
     // ==========================================
-    // Col 1: Mode/CH (X: 0 - 30)
     if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
         strcpy(string, "MR");
     } else {
@@ -87,7 +83,6 @@ void UI_DisplayCustomScreen(void)
     }
     UI_PrintStringSmallBold(string, 0, 30, 5);
 
-    // Col 2: Power (X: 34 - 64)
     switch (gTxVfo->OUTPUT_POWER) {
         case OUTPUT_POWER_LOW1:
         case OUTPUT_POWER_LOW2:
@@ -103,11 +98,9 @@ void UI_DisplayCustomScreen(void)
     }
     UI_PrintStringSmallBold(string, 34, 64, 5);
 
-    // Col 3: Tone placeholder (X: 68 - 94)
     strcpy(string, "CTCSS");
     UI_PrintStringSmallBold(string, 68, 94, 5);
 
-    // Col 4: Battery Voltage (X: 98 - 127)
     unsigned int bat = gBatteryVoltages[0];
     string[0] = '0' + (bat / 1000) % 10;
     string[1] = '.';
@@ -116,6 +109,5 @@ void UI_DisplayCustomScreen(void)
     string[4] = '\0';
     UI_PrintStringSmallBold(string, 98, 127, 5);
 
-    // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
 }
