@@ -79,7 +79,7 @@ void UI_DisplayCustomScreen(void)
     UI_PrintStringSmallBold(string, 64, 95, 5);
 
     // Column 4: Battery Indicator
-    sprintf(string, "%uV", gBatteryVoltage / 100);
+    sprintf(string, "%uV", gBatteryVoltages[0] / 100);
     UI_PrintStringSmallBold(string, 96, 127, 5);
 
     // Render the final buffer to the LCD screen
