@@ -33,12 +33,30 @@ void UI_DisplayCustomScreen(void)
     UI_DisplayClear();
 
     // ==========================================
-    // LINE 1: Top Text Header (14-16 chars)
+    // LINE 1: Top Header - Actual Channel Name
     // ==========================================
-    UI_PrintStringSmallBold("UV-K1 CUSTOM", 0, 127, 0);
+    if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE) && gRxVfo->Name[0] != '\0' && gRxVfo->Name[0] != 0xFF) {
+        // Show saved memory channel name
+        memcpy(string, gRxVfo->Name, 10);
+        string[10] = '\0';
+    } else if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
+        // Fallback if memory channel has no custom name
+        unsigned int ch = gRxVfo->CHANNEL_SAVE + 1;
+        string[0] = 'C'; string[1] = 'H'; string[2] = '-';
+        string[3] = '0' + (ch / 100) % 10;
+        string[4] = '0' + (ch / 10) % 10;
+        string[5] = '0' + ch % 10;
+        string[6] = '\0';
+    } else {
+        // VFO Mode indicator
+        string[0] = 'V'; string[1] = 'F'; string[2] = 'O'; string[3] = '-';
+        string[4] = '0' + gEeprom.RX_VFO;
+        string[5] = '\0';
+    }
+    UI_PrintStringSmallBold(string, 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Frequency in the Middle (Manual Formatting)
+    // LINE 2: Frequency in the Middle (Centered)
     // ==========================================
     uint32_t freq = gRxVfo->pRX->Frequency;
     unsigned int mhz = freq / 100000;
@@ -55,54 +73,48 @@ void UI_DisplayCustomScreen(void)
     string[8] = '0' + khz % 10;
     string[9] = '\0';
 
-    UI_PrintString(string, 2, 16, 2, true);
+    // X position shifted inward so it doesn't clip on the left edge
+    UI_PrintString(string, 8, 16, 2, true);
 
     // ==========================================
-    // LINE 3: Bottom Status Bar (4 Fixed Columns)
+    // LINE 3: Bottom Status Bar (4 Clean Columns)
     // ==========================================
-    // Column 1: Channel / VFO mode indicator
+    // Col 1: Mode/CH (X: 0 - 30)
     if (IS_MR_CHANNEL(gRxVfo->CHANNEL_SAVE)) {
-        unsigned int ch = gRxVfo->CHANNEL_SAVE + 1;
-        string[0] = 'C'; string[1] = 'H'; string[2] = '-';
-        string[3] = '0' + (ch / 100) % 10;
-        string[4] = '0' + (ch / 10) % 10;
-        string[5] = '0' + ch % 10;
-        string[6] = '\0';
+        strcpy(string, "MR");
     } else {
-        string[0] = 'V'; string[1] = 'F'; string[2] = 'O'; string[3] = '-';
-        string[4] = '0' + gEeprom.RX_VFO;
-        string[5] = '\0';
+        strcpy(string, "VFO");
     }
-    UI_PrintStringSmallBold(string, 0, 31, 5);
+    UI_PrintStringSmallBold(string, 0, 30, 5);
 
-    // Column 2: Power Level
+    // Col 2: Power (X: 34 - 64)
     switch (gTxVfo->OUTPUT_POWER) {
         case OUTPUT_POWER_LOW1:
         case OUTPUT_POWER_LOW2:
-            strcpy(string, "PWR:L");
+            strcpy(string, "LOW");
             break;
         case OUTPUT_POWER_MID:
-            strcpy(string, "PWR:M");
+            strcpy(string, "MID");
             break;
         case OUTPUT_POWER_HIGH:
         default:
-            strcpy(string, "PWR:H");
+            strcpy(string, "HIGH");
             break;
     }
-    UI_PrintStringSmallBold(string, 32, 63, 5);
+    UI_PrintStringSmallBold(string, 34, 64, 5);
 
-    // Column 3: CTCSS / Tone info placeholder
-    strcpy(string, "TONE");
-    UI_PrintStringSmallBold(string, 64, 95, 5);
+    // Col 3: Tone placeholder (X: 68 - 94)
+    strcpy(string, "CTCSS");
+    UI_PrintStringSmallBold(string, 68, 94, 5);
 
-    // Column 4: Battery Voltage Indicator
+    // Col 4: Battery Voltage (X: 98 - 127)
     unsigned int bat = gBatteryVoltages[0];
     string[0] = '0' + (bat / 1000) % 10;
     string[1] = '.';
     string[2] = '0' + (bat / 100) % 10;
     string[3] = 'V';
     string[4] = '\0';
-    UI_PrintStringSmallBold(string, 96, 127, 5);
+    UI_PrintStringSmallBold(string, 98, 127, 5);
 
     // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
