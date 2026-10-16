@@ -109,6 +109,13 @@ static KEY_Code_t gScreenSaverWakeKey = KEY_INVALID;
 
 static void ProcessKey(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld);
 
+void APP_ProcessKeysCustomScreen(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
+{
+    if (bKeyPressed && (Key == KEY_EXIT || Key == KEY_PTT))
+    {
+        GUI_SelectNextDisplay(DISPLAY_MAIN);
+    }
+}
 
 void (*const ProcessKeysFunctions[])(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld) = {
     [DISPLAY_MAIN] = &MAIN_ProcessKeys,
