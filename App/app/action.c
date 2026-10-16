@@ -451,6 +451,19 @@ void ACTION_Handle(KEY_Code_t Key, bool bKeyPressed, bool bKeyHeld)
 {
     HideFKeyIcon();
 
+    // --- ADD THIS BLOCK ---
+    if (gScreenToDisplay == DISPLAY_CUSTOM_SCREEN)
+    {
+        if (bKeyPressed && (Key == KEY_EXIT || Key == KEY_PTT))
+        {
+            gScreenToDisplay = DISPLAY_MAIN;
+            gRequestDisplayScreen = DISPLAY_MAIN;
+            gPttWasReleased = true;
+            return;
+        }
+    }
+    // ----------------------
+
     if (gScreenToDisplay == DISPLAY_MAIN && gDTMF_InputMode){
          // entering DTMF code
 
