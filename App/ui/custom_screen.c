@@ -71,6 +71,8 @@ void UI_DisplayCustomScreen(void)
     string[9] = '\0';
 
     UI_PrintString(string, 4, 127, 2, true);
+    
+    UI_PrintStringSmallNormal(String + 7, 113, 0, line + 1);
 
     // ==========================================
     // LINE 3: Bottom Status Bar (3 Spread Columns)
