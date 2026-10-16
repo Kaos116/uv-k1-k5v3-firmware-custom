@@ -50,10 +50,10 @@ void UI_DisplayCustomScreen(void)
         string[4] = '0' + gEeprom.RX_VFO;
         string[5] = '\0';
     }
-    UI_PrintStringSmall(string, 0, 127, 0);
+    UI_PrintStringSmallBold(string, 0, 127, 0);
 
     // ==========================================
-    // LINE 2: Frequency in the Middle (Standard)
+    // LINE 2: Frequency in the Middle
     // ==========================================
     uint32_t freq = gRxVfo->pRX->Frequency;
     unsigned int mhz = freq / 100000;
@@ -70,7 +70,7 @@ void UI_DisplayCustomScreen(void)
     string[8] = '0' + khz % 10;
     string[9] = '\0';
 
-    UI_PrintString(string, 4, 127, 2, false);
+    UI_PrintString(string, 4, 127, 2, true);
 
     // ==========================================
     // LINE 3: Bottom Status Bar (3 Spread Columns)
@@ -81,7 +81,7 @@ void UI_DisplayCustomScreen(void)
     } else {
         strcpy(string, "VFO");
     }
-    UI_PrintStringSmall(string, 0, 40, 5);
+    UI_PrintStringSmallBold(string, 0, 40, 5);
 
     // Col 2: Power Level
     switch (gTxVfo->OUTPUT_POWER) {
@@ -97,11 +97,11 @@ void UI_DisplayCustomScreen(void)
             strcpy(string, "HIGH");
             break;
     }
-    UI_PrintStringSmall(string, 44, 84, 5);
+    UI_PrintStringSmallBold(string, 44, 84, 5);
 
     // Col 3: Tone info
     strcpy(string, "CTCSS");
-    UI_PrintStringSmall(string, 88, 127, 5);
+    UI_PrintStringSmallBold(string, 88, 127, 5);
 
     // Render the final buffer to the LCD screen
     ST7565_BlitFullScreen();
